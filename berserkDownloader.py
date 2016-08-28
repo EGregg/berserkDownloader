@@ -1,47 +1,69 @@
 #! python3
 import requests, bs4, os
 
-os.makedirs('Berserk', exist_ok=True)
 
-#TODO Currently resolves at 20 and then downloads the image at comic 20
-currNum = 4
-while (currNum<20):
-    webPage = requests.get('http://mangapark.me/manga/berserk/s3/c345/%d' % currNum)
-    webPage.raise_for_status()
-    currNum = currNum + 1
 
-print(webPage)
+def soupObject():
+    #This creates the soup object
+    noStarchSoup = bs4.BeautifulSoup(webPage.text, "lxml")
+    type(noStarchSoup)
 
-#This creates the soup object
-noStarchSoup = bs4.BeautifulSoup(webPage.text, "lxml")
+    elems = noStarchSoup.select('img')
+    print(elems[2])
 
-type(noStarchSoup)
+    elemsURL = elems[2].get('src')
+    print(elemsURL)
 
-elems = noStarchSoup.select('img')
+    #download the file
+    res = requests.get(elemsURL)
+    res.raise_for_status()
 
-print(elems[2])
+def saveImage():
+    #TODO How can I change the file name that is created?
+    os.makedirs('Berserk %d' % (currVol), exist_ok=True)
+    imageFile = open(os.path.join('Berserk %d' % (currVol),os.path.basename(elemsURL)), 'wb')
+    print(elemsURL + ' created correctly')
+    for chunk in res.iter_content(100000):
+        imageFile.write(chunk)
+    imageFile.close()
 
-elemsURL = elems[2].get('src')
-
-#download the file
-res = requests.get(elemsURL)
-res.raise_for_status()
-
+#Not currently being used
 def findATags():
     allATags = noStarchSoup.find_all('a')
     for x in allATags:
         print(x)
 
-def saveImage():
-    imageFile = open(os.path.join('Berserk',os.path.basename(elemsURL)), 'wb')   
-    for chunk in res.iter_content(100000):
-        imageFile.write(chunk)
-    imageFile.close()
+
+currChapter = 0
+currVol = 336
+while (currVol<339):
+    while (currChapter<19):
+        webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (currVol,currChapter))
+        print (webPage)
+        webPage.raise_for_status()
+
+        #This creates the soup object
+        noStarchSoup = bs4.BeautifulSoup(webPage.text, "lxml")
+        type(noStarchSoup)
+
+        elems = noStarchSoup.select('img')
+
+        elemsURL = elems[2].get('src')
+
+        #download the file
+        res = requests.get(elemsURL)
+        res.raise_for_status()
+
+        saveImage()
+            
+        currChapter = currChapter + 1
+    currVol = currVol + 1
+    currChapter = 0
+
+
 
 #TODO there's no ID for the previous button, how do I select a JS variable?
 prevLink = noStarchSoup.select('Prev')
 print(prevLink)
 
-
-saveImage()
 
