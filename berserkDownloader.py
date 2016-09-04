@@ -35,9 +35,9 @@ def findATags():
 
 
 currChapter = 0
-currVol = 336
-while (currVol<339):
-    while (currChapter<19):
+currVol = 338
+while (currVol<340):
+    while (currChapter<24):
         webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (currVol,currChapter))
         print (webPage)
         webPage.raise_for_status()
@@ -48,7 +48,10 @@ while (currVol<339):
 
         elems = noStarchSoup.select('img')
 
-        elemsURL = elems[2].get('src')
+        try:
+            elemsURL = elems[2].get('src')
+        except:
+            continue
 
         #download the file
         res = requests.get(elemsURL)
