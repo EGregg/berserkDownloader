@@ -1,7 +1,15 @@
 #! python3
 import requests, bs4, os
 
+beginVol = int(input("What volume to begin with: "))
 
+endVol = int(input("What volume to begin with: "))
+
+if beginVol == '':
+    beginVol = 338
+    print(beginVol)
+else:
+    beginVol = beginVol
 
 def soupObject():
     #This creates the soup object
@@ -20,8 +28,8 @@ def soupObject():
 
 def saveImage():
     #TODO How can I change the file name that is created?
-    os.makedirs('Berserk %d' % (currVol), exist_ok=True)
-    imageFile = open(os.path.join('Berserk %d' % (currVol),os.path.basename(elemsURL)), 'wb')
+    os.makedirs('Berserk %d' % (beginVol), exist_ok=True)
+    imageFile = open(os.path.join('Berserk %d' % (beginVol),os.path.basename(elemsURL)), 'wb')
     print(elemsURL + ' created correctly')
     for chunk in res.iter_content(100000):
         imageFile.write(chunk)
@@ -34,11 +42,10 @@ def findATags():
         print(x)
 
 
-currChapter = 0
-currVol = 338
-while (currVol<340):
-    while (currChapter<24):
-        webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (currVol,currChapter))
+currChapter = 1
+while (beginVol<endVol):
+    while (currChapter<17):
+        webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (beginVol,currChapter))
         print (webPage)
         webPage.raise_for_status()
 
@@ -47,11 +54,9 @@ while (currVol<340):
         type(noStarchSoup)
 
         elems = noStarchSoup.select('img')
+        print(elems)
 
-        try:
-            elemsURL = elems[2].get('src')
-        except:
-            continue
+        elemsURL = elems[1].get('src')
 
         #download the file
         res = requests.get(elemsURL)
@@ -60,7 +65,7 @@ while (currVol<340):
         saveImage()
             
         currChapter = currChapter + 1
-    currVol = currVol + 1
+    beginVol = beginVol + 1
     currChapter = 0
 
 
