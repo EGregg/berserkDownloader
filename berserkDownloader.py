@@ -5,11 +5,6 @@ beginVol = int(input("What volume to begin with: "))
 
 endVol = int(input("What volume to begin with: "))
 
-if beginVol == '':
-    beginVol = 338
-    print(beginVol)
-else:
-    beginVol = beginVol
 
 def soupObject():
     #This creates the soup object
@@ -44,27 +39,35 @@ def findATags():
 
 currChapter = 1
 while (beginVol<endVol):
-    while (currChapter<17):
-        webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (beginVol,currChapter))
-        print (webPage)
-        webPage.raise_for_status()
+    while (currChapter<22):
+        try:
+            webPage = requests.get('http://mangapark.me/manga/berserk/s3/c%d/%d' % (beginVol,currChapter))
+            #print (webPage)
+            webPage.raise_for_status()
 
-        #This creates the soup object
-        noStarchSoup = bs4.BeautifulSoup(webPage.text, "lxml")
-        type(noStarchSoup)
+            #This creates the soup object
+            noStarchSoup = bs4.BeautifulSoup(webPage.text, "lxml")
+            type(noStarchSoup)
 
-        elems = noStarchSoup.select('img')
-        print(elems)
+            elems = noStarchSoup.select('img')
+            #print(elems)
 
-        elemsURL = elems[1].get('src')
+            elemsURL = elems[1].get('src')
 
-        #download the file
-        res = requests.get(elemsURL)
-        res.raise_for_status()
+            #download the file
+            res = requests.get(elemsURL)
+            res.raise_for_status()
 
-        saveImage()
-            
-        currChapter = currChapter + 1
+            saveImage()
+                
+            currChapter = currChapter + 1
+        except:
+            print("----------------------------------------------------")
+            print("Skipping junk file at " + str(elems))
+            print("----------------------------------------------------")
+            currChapter = 0
+            beginVol = beginVol + 1
+            pass
     beginVol = beginVol + 1
     currChapter = 0
 
