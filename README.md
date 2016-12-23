@@ -10,6 +10,9 @@ berserkDownloader.py<br>
 <strong> Directions:</strong> <br>
 Place file in directory where the manga should be saved.
 
-Run $berserkDownloader.py from command line.
+execute:
+```
+python berserkDownloader.py
+```
 
 Running berserkDownloader.py will begin to search the manga website for the manga Berserk. After locating the manga it will then create a folder with the volume that it will be downloading. Once the folder is created, each page of the manga will be saved in the volume folder as a JPEG image.
